@@ -2,7 +2,7 @@ class AuthRegController {
     singIn() {
         
     }
-    singUp() {
+    registration() {
 
     }
 }

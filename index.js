@@ -6,22 +6,26 @@ const mongoose = require('mongoose');
 
 
 app.use(express.json());
-app.use('/api', router)
+app.use('/api', router);
 
-const DB = process.env.DATABASE;
 
-mongoose.connect(process.env.DATABASE, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true 
-}).then(()=> {
-    console.log('DB is successfuly connected!')
-});
+
+
+
+
 
 
 const port = process.env.PORT || 3000;
 
 async function start() {
     try{
+        await mongoose.connect(process.env.DATABASE, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true 
+        }).then(()=> {
+            console.log('DB is successfuly connected!')
+        });
+
         app.listen(port, () => {
         console.log(`Server started on ${port}`)
         })
