@@ -25,4 +25,4 @@ ArticleSchema.pre('save', (next) => {
 
 // + middleware for findOneAndUpdate()
 
-module.exports = model('Article', ArticleSchema);
+module.exports = mongoose.model('Article', ArticleSchema);
