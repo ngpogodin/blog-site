@@ -3,10 +3,12 @@ const express = require('express');
 const app = express();
 const router = require('./routes/index');
 const mongoose = require('mongoose');
+const errorMiddleware = require('./middlewares/errorMiddleware');
 
 
 app.use(express.json());
 app.use('/api', router);
+app.use(errorMiddleware)
 
 
 
