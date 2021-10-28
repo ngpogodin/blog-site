@@ -20,12 +20,18 @@ class UserService {
         
         const salt = await bcrypt.genSalt();
         const hash = await bcrypt.hash(password, salt);
-        const user = await userModel.create({email, hash, userName, salt});
+        const user =  await userModel.create({email, hash, userName, salt});
             
             
         const tokens = tokenService.generateTokens({email: user.email, userName: user.userName ,id : user._id});
         await tokenService.saveToken(user._id, tokens.refreshToken);
-        return {user:user, accesToken: tokens.accessToken};
+        return {
+            userName:user.userName,
+            email:user.email,
+            bio:user.bio,
+            image:user.image,
+            token: tokens.accessToken
+        };
       
     }
 
@@ -44,7 +50,13 @@ class UserService {
 
         const tokens = tokenService.generateTokens({email, userName: user.userName,id: user._id});
         await tokenService.saveToken(user._id, tokens.refreshToken)
-        return {user:user, accesToken: tokens.accessToken}
+        return {
+            userName:user.userName,
+            email:user.email,
+            bio:user.bio,
+            image:user.image,
+            token: tokens.accessToken
+        };
 
     }
 }

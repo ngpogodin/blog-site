@@ -6,7 +6,6 @@ class AuthRegController {
     async registration(req,res,next) {
         try{
             const errors = validationResult(req);
-            console.log(errors.array())
             if(!errors.isEmpty() ) {
                 throw ApiError.BadRequest('Invalid email or password', errors.array());
             }
@@ -14,7 +13,8 @@ class AuthRegController {
             const {username, email, password} = req.body.user;
             const userData = await userService.registration(email,password,username);
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly:true})
-            res.json(userData)
+            
+            res.json({user:userData})
         } catch(e) {
             next(e)
         }
@@ -25,7 +25,7 @@ class AuthRegController {
             const {email,password} = req.body.user;
             const userData = await userService.login(email, password);
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly:true})
-            res.json(userData)
+            res.json({user:userData})
         } catch(e) {
             next(e)
         }
