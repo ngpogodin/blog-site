@@ -2,16 +2,18 @@ const mongoose = require('mongoose');
 const ApiError = require('../exceptions/api-error');
 const userModel = require('../models/userModel');
 const {validationResult} = require('express-validator');
+const userService = require('../service/userService');
+const selectField = require('../utils/selectField');
 
 
 class UserController {
     async getUser(req,res,next) {
         try{
-            const query = userModel.findById(req.user.id)
-            const userData = await query.select('email token userName bio image -_id');
-            userData._doc.token = req.headers.authorization.split(' ')[1];  
+            const userData = await userModel.findById(req.user.id);
+            const token = req.headers.authorization.split(' ')[1];  
             
-            res.json({user: userData})
+            await selectField.user(userData,token);
+            res.json({user: userData});
         }catch(e) {
             next(e)
         }
@@ -25,11 +27,11 @@ class UserController {
                 throw ApiError.BadRequest('Invalid email or username', errors.array());
             }
 
-
             const updateDate = req.body.user;
-            const query = userModel.findByIdAndUpdate(req.user.id, updateDate, {new: true});
-            const userData = await query.select('email token userName bio image -_id');
-            userData._doc.token = req.headers.authorization.split(' ')[1];
+            const query = await userModel.findByIdAndUpdate(req.user.id, updateDate, {new: true});
+            const token = req.headers.authorization.split(' ')[1];
+            const userData = selectField.user(query, token);
+            
             res.json({user: userData});
         }catch(e) {
             next(e)

@@ -2,7 +2,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const tokenService = require('./tokenService');
 const userModel = require('../models/userModel');
-const ApiError = require('../exceptions/api-error')
+const ApiError = require('../exceptions/api-error');
+const { find } = require('../models/userModel');
+const selectField = require('../utils/selectField');
 
 
 class UserService {
@@ -22,16 +24,11 @@ class UserService {
         const hash = await bcrypt.hash(password, salt);
         const user =  await userModel.create({email, hash, userName, salt});
             
-            
         const tokens = tokenService.generateTokens({email: user.email, userName: user.userName ,id : user._id});
         await tokenService.saveToken(user._id, tokens.refreshToken);
-        return {
-            userName:user.userName,
-            email:user.email,
-            bio:user.bio,
-            image:user.image,
-            token: tokens.accessToken
-        };
+
+        await selectField.user(user,tokens.accessToken);
+        return user;
       
     }
 
@@ -49,15 +46,11 @@ class UserService {
         }
 
         const tokens = tokenService.generateTokens({email, userName: user.userName,id: user._id});
-        await tokenService.saveToken(user._id, tokens.refreshToken)
-        return {
-            userName:user.userName,
-            email:user.email,
-            bio:user.bio,
-            image:user.image,
-            token: tokens.accessToken
-        };
+        await tokenService.saveToken(user._id, tokens.refreshToken);
 
+        await selectField.user(user,tokens.accessToken);
+        return user;
+    
     }
 }
 
