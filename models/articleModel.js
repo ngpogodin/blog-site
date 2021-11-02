@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slug = require('slug');
+const ApiError = require('../exceptions/api-error');
 
 
 
@@ -21,6 +22,16 @@ ArticleSchema.pre('save',function(next) {
     this.slug = slug(this.title);
     next();
 })
+
+const handleE11000 = function(error, res, next) {
+  if (error.name === 'MongoServerError' && error.code === 11000) {
+    next(ApiError.BadRequest('There was a duplicate key error',error));
+  } else {
+    next();
+  }
+};
+
+ArticleSchema.post('findOneAndUpdate', handleE11000)
 
 
 // + middleware for findOneAndUpdate()
