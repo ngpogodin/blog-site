@@ -59,7 +59,8 @@ class ArticleController {
             if(data.title) {
                 data.slug = slug(data.title);
             }
-            const article =  await articleModel.findOneAndUpdate({slug:req.params.slug},{...data},{new:true});
+            const updatedAt = new Date();
+            const article =  await articleModel.findOneAndUpdate({slug:req.params.slug},{...data,updatedAt},{new:true});
             //handling errors for this define in articleModel
             res.json(article);
         }catch(e) {
