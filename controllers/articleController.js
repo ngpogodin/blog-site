@@ -1,22 +1,65 @@
 const ApiError = require('../exceptions/api-error');
 const articleModel = require('../models/articleModel');
+const userModel = require('../models/userModel');
 const articleService = require('../service/articleService');
 const slug = require('slug');
 
 
 class ArticleController {
 
-    async getAllArticles(req,res) {
-        const {limit , offset} = {...req.query}
-        
-        const articles = await articleService.pagination(limit,offset)
+    async getAllArticles(req,res,next) {
+        try{
+            const {limit , offset} = {...req.query};
+            if(req.query.favorited) {
+                const user = await userModel.findOne({userName: req.query.favorited});
+                if(!user) throw ApiError.NotFound('User not exist');
 
-        res.json({length:articles.length,articles})
+                const articles = await articleService.pagination({_id : {$in : [user.favorites]}},limit,offset);
+                res.json({length:articles.length,articles})
+                return
+            }
+            
+            const filter = {};
+            if(req.query.tag) {
+                filter.tagList = req.query.tag
+            }
+            if(req.query.author) {
+                const author = await userModel.findOne({userName: req.query.author});
+                if(!author) throw ApiError.NotFound('User not exist');
+                filter.author = author._id;
+            }
+    
+    
+            const articles = await articleService.pagination(filter,limit,offset);
+    
+            res.json({length:articles.length,articles});
+        }
+        catch(e) {
+            next(e)
+        }
     }
 
 
-    async getArticlesByUser(req,res) {
+    async getFeed(req,res,next) {
+        try{
+            const {limit , offset} = {...req.query};
+            const followers = await userModel.findById(req.user.id);
 
+            const arrFollowers = followers.following.map(id => {
+                return {author: id}
+            })
+
+            if(!arrFollowers.length) {
+                res.json({articles: {}})
+                next(e)
+            }
+
+            const articles = await articleService.pagination({$or : arrFollowers},limit,offset);
+
+            res.json({articles});
+        }catch(e) {
+            next(e)
+        }
     }
 
 
@@ -70,7 +113,7 @@ class ArticleController {
 
 
     async deleteArticle(req,res) {
-
+        
     }
 
 
