@@ -6,7 +6,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 
 router.get('/', articleController.getAllArticles);
-router.get('/feed',authMiddleware, articleController.getArticlesByUser);
+router.get('/feed',authMiddleware, articleController.getFeed);
 router.get('/:slug', articleController.getArticleBySlug);
 router.post('/',authMiddleware, articleController.createArticle);
 router.put('/:slug',authMiddleware, articleController.updateArticle);
