@@ -112,18 +112,49 @@ class ArticleController {
     }
 
 
-    async deleteArticle(req,res) {
-        
+    async deleteArticle(req,res,next) {
+        try{
+            const slug = req.params.slug;
+            const article = await articleModel.findOneAndDelete({author:req.user.id,slug});
+    
+            if(!article) throw ApiError.NotFound('Article doesn`t exist');
+    
+            res.json({article});
+        }catch(e) {
+            next(e);
+        }
     }
 
 
-    async addToFavorite(req,res) {
+    async addToFavorite(req,res,next) {
+        try{
+            const slug = req.params.slug;
+            const userId = req.user.id;
 
+            const article = await articleModel.findOne({slug});
+            if(!article) throw ApiError.NotFound('Article doesn`t exist');
+
+            const user = await userModel.findByIdAndUpdate(userId, {$addToSet: { favorites: article._id }},{new:true})
+            res.json({user});
+        }catch(e) {
+            next(e);
+        }
     }
 
 
-    async deleteFromFavorite(req,res) {
+    async deleteFromFavorite(req,res,next) {
+        try{
+            const slug = req.params.slug;
+            const userId = req.user.id;
 
+            const article = await articleModel.findOne({slug});
+            if(!article) throw ApiError.NotFound('Article doesn`t exist');
+
+            const user = await userModel.findByIdAndUpdate(userId, { $pull: { favorites: article._id }},{new:true})
+            res.json({user});
+        }catch(e) {
+            next(e);
+        }
     }
 
 
