@@ -2,6 +2,7 @@ const ApiError = require('../exceptions/api-error');
 const articleModel = require('../models/articleModel');
 const userModel = require('../models/userModel');
 const articleService = require('../service/articleService');
+const commentModel = require('../models/commentModel');
 const slug = require('slug');
 
 
@@ -158,18 +159,45 @@ class ArticleController {
     }
 
 
-    async createComment(req,res) {
-        
+    async createComment(req,res,next) {
+        try{
+            const body = req.body.comment.body;
+            const author = req.user.id;
+            const createdAt = new Date();
+    
+            const comment = await commentModel.create({body, author,createdAt})
+            comment.populate({path: 'author', select: 'userName bio image -_id'});
+            
+            await articleModel.findOneAndUpdate({slug:req.params.slug}, {$addToSet: { comments: comment._id }});
+            
+            res.json(comment)
+        }catch(e) {
+            next(e)
+        }
     }
 
 
-    async getComments(req,res) {
-
+    async getComments(req,res,next) {
+        try{
+            const article = articleModel.findOne({slug:req.params.slug});
+            const comments = await article.populate({path:'comments'});
+            res.json({comments: comments.comments})
+        }catch(e) {
+            next(e)
+        }
     }
 
 
-    async deleteComment(req,res) {
-
+    async deleteComment(req,res,next) {
+        try{
+            const paramsId = req.params.id;
+            const userId = req.user.id;
+            const comment =  await commentModel.findOneAndDelete({_id: paramsId, author: userId});
+            if(!comment) throw ApiError.NotFound('Comment not found', comment);
+            res.json(comment);
+        }catch(e) {
+            next(e)
+        }
     }
 }
 
