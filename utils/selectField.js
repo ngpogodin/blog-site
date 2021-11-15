@@ -6,7 +6,6 @@ class SelectField {
         excludeWords.forEach(el => {
             delete obj._doc[el];
         })
-        console.log(obj)
         return obj
     }
 
@@ -16,9 +15,10 @@ class SelectField {
             delete obj._doc[el];
         })
         obj._doc.token = token
-        console.log(obj)
         return obj
     }
+
+    articles(){}
 }
 
 
