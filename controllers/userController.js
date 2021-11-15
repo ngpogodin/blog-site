@@ -1,8 +1,6 @@
-const mongoose = require('mongoose');
 const ApiError = require('../exceptions/api-error');
 const userModel = require('../models/userModel');
 const {validationResult} = require('express-validator');
-const userService = require('../service/userService');
 const selectField = require('../utils/selectField');
 
 

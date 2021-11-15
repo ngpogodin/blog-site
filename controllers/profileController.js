@@ -1,9 +1,9 @@
 const userModel = require('../models/userModel');
 const ApiError = require('../exceptions/api-error');
-const userService = require('../service/userService');
 const selectField = require('../utils/selectField');
 
 class ProfileController {
+    
     async getProfile(req,res,next) {
         try{
             const userName = req.params['username'];
@@ -43,6 +43,7 @@ class ProfileController {
             next(e)
         }
     }
+
     async unfollowUser(req,res,next) {
         try{
             const userName = req.params['username'];
