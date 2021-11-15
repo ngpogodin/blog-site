@@ -16,7 +16,7 @@ router.delete('/:slug/favorite',authMiddleware, articleController.deleteFromFavo
 
 //comments
 router.get('/:slug/comments',authMiddleware, articleController.getComments)
-router.post('/:slug/comments', articleController.createComment);
+router.post('/:slug/comments', authMiddleware,articleController.createComment);
 router.delete('/:slug/comments/:id',authMiddleware, articleController.deleteComment);
 
 
