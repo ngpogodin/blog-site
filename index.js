@@ -8,7 +8,7 @@ const errorMiddleware = require('./middlewares/errorMiddleware');
 
 app.use(express.json());
 app.use('/api', router);
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 
 
 
@@ -24,14 +24,14 @@ async function start() {
             useNewUrlParser: true,
             useUnifiedTopology: true 
         }).then(()=> {
-            console.log('DB is successfuly connected!')
+            console.log('DB is successfuly connected!');
         });
 
         app.listen(port, () => {
         console.log(`Server started on ${port}`)
-        })
+        });
     } catch(err) {
-        console.log(err)
+        console.log(err);
     }
 }
 
