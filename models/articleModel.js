@@ -12,8 +12,8 @@ const ArticleSchema = new mongoose.Schema({
     tagList: [String],
     createdAt: Date,
     updatedAt: Date,
-    favoritesCount: { type: Number, default: 0 },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
   }
 )
 
@@ -22,6 +22,11 @@ ArticleSchema.pre('save',function(next) {
     this.slug = slug(this.title);
     next();
 })
+
+// ArticleSchema.post('init', function(err) {
+//   console.log(err);
+  
+// })
 
 const handleE11000 = function(error, res, next) {
   if (error.name === 'MongoServerError' && error.code === 11000) {
